@@ -11,7 +11,8 @@ project(
 
 
 test_sources = [
-    'src/zman_time_line.t.cpp'
+      'src/zman_time_line.t.cpp'
+    , 'src/zman_temporal_id.t.cpp'
 ]
 
 exec = executable(
