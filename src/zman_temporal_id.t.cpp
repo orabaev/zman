@@ -4,6 +4,18 @@
 
 using namespace zman;
 
+TEST_CASE("invalid_id")
+{
+    REQUIRE( invalid_id<int>::value == 0 );
+}
+
+TEST_CASE("is_valid_id")
+{
+    REQUIRE( is_valid_id( 0) == false );
+    REQUIRE( is_valid_id( 1) == true  );
+    REQUIRE( is_valid_id(-1) == true  );
+}
+
 TEST_CASE("temporal_id.defaults")
 {
     using temporal_id_type = temporal_id<int,int>;
