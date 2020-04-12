@@ -24,6 +24,8 @@ public:
         , const time_point_type&  time_point_from
     )
     {
+        validate_id(id);
+
         if (try_add_when_no_values(id, time_point_from))    return;
         if (try_add_when_single_value(id, time_point_from)) return;
 
@@ -32,9 +34,12 @@ public:
         if (try_add_at_the_end(it, tid)) return;
 
         validate_duplicate_time_point(time_point_from, it->time_point()); 
-        auto insert_before_it = it + 1; 
-        if (try_add_at_the_end(insert_before_it, tid)) return;
-        validate_duplicate_time_point(time_point_from, insert_before_it->time_point()); 
+        
+        auto insert_before_it 
+             = time_point_from < it->time_point() 
+             ? it
+             : it + 1; 
+        
         values.insert(insert_before_it, tid);
     }
 
@@ -46,7 +51,20 @@ public:
 
     temporal_id_type find_id(const time_point_type& tpoint);
 
+    const container& content() 
+    {
+        return values;
+    } 
+
 private:
+    void validate_id(const id_type& id)
+    {
+        if (invalid_id<id_type>::value == id)
+        {
+            throw std::invalid_argument("invalid id value");
+        }
+    }
+    
     void validate_duplicate_time_point(
           const time_point_type& time_point_1
         , const time_point_type& time_point_2
@@ -78,6 +96,7 @@ private:
         {
             temporal_id tid(id, time_point_from);
             auto& value = values.front();
+            validate_duplicate_time_point(time_point_from, value.time_point());
             bool insert_before = value.time_point() > time_point_from;
             if (insert_before) values.insert(values.begin(), tid); 
             else               values.push_back(tid); 
