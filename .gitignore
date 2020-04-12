@@ -1,3 +1,10 @@
+# hidden files
+src/.*
+.gitignore.*
+
+# builddir
+/builddir
+
 # Prerequisites
 *.d
 
