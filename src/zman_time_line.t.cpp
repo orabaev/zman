@@ -14,17 +14,11 @@ TEST_CASE("time_line.defaults")
     static_assert( std::is_move_constructible<time_line<temporal_id_type>>::value );
 }
 
-TEST_CASE("time_line.add_id.invalid_id")
+TEST_CASE("time_line.invalid_id")
 {
     using temporal_id_type = temporal_id<int,int>;
     using time_line_type   = time_line<temporal_id_type>;
-    auto INVALID_ID  =  invalid_id<int>::value;
-
-    time_line_type time_line;
-    const auto& content = time_line.content();
-
-    CHECK_THROWS( time_line.add_id(INVALID_ID, 1) );
-    CHECK( content.size() == 0 );
+    CHECK( time_line_type::invalid_id() == invalid_id<int>::value );
 }
 
 TEST_CASE("time_line.add_id.when_content_is_empty")
@@ -137,3 +131,35 @@ TEST_CASE("time_line.add_id.permutation")
         }
     }
 }
+
+TEST_CASE("time_line.find_id")
+{
+    using temporal_id_type = temporal_id<int,int>;
+    using time_line_type   = time_line<temporal_id_type>;
+    using vector_type      = std::vector<temporal_id_type>;
+
+    vector_type vec{ {1,5},{2,10},{3,11},{4,17},{5,27},{6,28} }; 
+    time_line_type time_line;
+    for (const auto& tid : vec) time_line.add_id(tid.id(), tid.time_point());
+    
+    CHECK( time_line.find_id( 4) == time_line.invalid_id() ); 
+    CHECK( time_line.find_id( 5) == 1 ); 
+    CHECK( time_line.find_id( 6) == 1 ); 
+    CHECK( time_line.find_id( 9) == 1 ); 
+    CHECK( time_line.find_id(10) == 2 ); 
+    CHECK( time_line.find_id(11) == 3 ); 
+    CHECK( time_line.find_id(12) == 3 ); 
+    CHECK( time_line.find_id(13) == 3 ); 
+    CHECK( time_line.find_id(14) == 3 ); 
+    CHECK( time_line.find_id(17) == 4 ); 
+    CHECK( time_line.find_id(18) == 4 ); 
+    CHECK( time_line.find_id(19) == 4 ); 
+    CHECK( time_line.find_id(25) == 4 ); 
+    CHECK( time_line.find_id(26) == 4 ); 
+    CHECK( time_line.find_id(27) == 5 ); 
+    CHECK( time_line.find_id(28) == 6 ); 
+    CHECK( time_line.find_id(30) == 6 ); 
+    CHECK( time_line.find_id(40) == 6 ); 
+    CHECK( time_line.find_id(99) == 6 ); 
+}
+
