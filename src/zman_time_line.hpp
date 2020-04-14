@@ -2,6 +2,7 @@
 #define ZMAN_TIME_LINE_HPP
 
 #include "zman_temporal_id.hpp"
+#include "zman_id.hpp"
 #include <vector>
 #include <array>
 #include <algorithm>
