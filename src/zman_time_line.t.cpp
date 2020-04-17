@@ -9,8 +9,10 @@ using namespace zman;
 TEST_CASE("time_line.defaults")
 {
     using temporal_data_type = temporal_data<int,int>;
-    static_assert( std::is_default_constructible<time_line<temporal_data_type>>::value );
-    static_assert( std::is_move_constructible<time_line<temporal_data_type>>::value );
+    using time_line_type   = time_line<temporal_data_type>;
+    static_assert( std::is_default_constructible<time_line_type>::value );
+    static_assert( std::is_move_constructible<time_line_type>::value );
+    static_assert( std::is_move_assignable<time_line_type>::value );
 }
 
 TEST_CASE("time_line.invalid_data")
