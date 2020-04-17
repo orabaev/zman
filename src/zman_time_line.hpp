@@ -20,7 +20,7 @@ public:
 
     time_line() = default;
 
-    static constexpr auto invalid_data()
+    static const data_type& invalid_data()
     {
         return zman::invalid_data<data_type>::value;
     }   
@@ -47,7 +47,7 @@ public:
         values.insert(insert_before_it, tdata);
     }
     
-    data_type find_data(const time_point_type& time_point) const
+    const data_type& find_data(const time_point_type& time_point) const
     {
         bool no_values = values.empty();
         if (no_values) return invalid_data();
