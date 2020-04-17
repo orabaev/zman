@@ -1,6 +1,7 @@
 # hidden files
 src/.*
 .gitignore.*
+.*
 
 # builddir
 /builddir

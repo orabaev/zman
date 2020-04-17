@@ -5,10 +5,10 @@ project(
 )
 
 test_sources = [
-      'src/zman_time_line.t.cpp'
-    , 'src/zman_id.t.cpp'
-    , 'src/zman_temporal_id.t.cpp'
-    , 'src/zman_temporal_entity.t.cpp'
+       'src/zman_main.t.cpp' 
+     , 'src/zman_invalid_data.t.cpp' 
+     , 'src/zman_temporal_data.t.cpp'
+     , 'src/zman_time_line.t.cpp'
 ]
 
 exec = executable(
