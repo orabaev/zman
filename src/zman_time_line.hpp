@@ -37,7 +37,7 @@ public:
         auto it = std::lower_bound(begin(values), end(values), tdata);
         if (try_add_at_the_end(it, tdata)) return;
 
-        valdataate_duplicate_time_point(from, it->time_point()); 
+        validate_duplicate_time_point(from, it->time_point()); 
         
         auto insert_before_it 
              = from < it->time_point() 
@@ -70,7 +70,7 @@ public:
     } 
 
 private:
-    void valdataate_duplicate_time_point(
+    void validate_duplicate_time_point(
           const time_point_type& time_point_1
         , const time_point_type& time_point_2
     )
@@ -101,7 +101,7 @@ private:
         {
             temporal_data tdata(data, from);
             auto& value = values.front();
-            valdataate_duplicate_time_point(from, value.time_point());
+            validate_duplicate_time_point(from, value.time_point());
             bool insert_before = value.time_point() > from;
             if (insert_before) values.insert(values.begin(), tdata); 
             else               values.push_back(tdata); 
