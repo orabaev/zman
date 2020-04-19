@@ -19,8 +19,8 @@ class time_line
 public:
     using time_point_type     = TIME_POINT;
     using value_type          = VALUE;
-    using container           = CONTAINER;
-    using temporal_value_type = typename container::value_type;
+    using container_type      = CONTAINER;
+    using temporal_value_type = typename container_type::value_type;
     using optional_value_type = typename temporal_value_type::value_type;
 
     time_line() = default;
@@ -57,7 +57,7 @@ public:
         return nullptr;
     }
 
-    const container& content() 
+    const container_type& content() 
     {
         return values;
     } 
@@ -126,7 +126,7 @@ private:
         return optional_value ? &optional_value.value() : nullptr;
     }
        
-    container values;
+    container_type values;
 }; 
 
 }

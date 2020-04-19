@@ -5,38 +5,47 @@
 
 namespace zman {
 
-template<class TIMELINE, class KEY, class CONTAINER = std::unordered_map<KEY, typename TIMELINE::data_type>>
+template<class KEY, class TIMELINE, class CONTAINER = std::unordered_map<KEY, TIMELINE>>
 class temporal_attributes
 {
 public:
-    using time_line_type  = TIMELINE;
-    using value_type      = typename time_line_type::data_type;
-    using time_point_type = typename time_line_type::time_point_type;
     using key_type        = KEY;
+    using time_line_type  = TIMELINE;
     using container_type  = CONTAINER;
+    using time_point_type = typename time_line_type::time_point_type;
+    using value_type      = typename time_line_type::value_type;
 
     temporal_attributes() = default;
 
-    void add_attribute(
-          const time_point_type&  time_point
-        , const key_type&         key 
-        , const value_type&       value
+    void set_value_from(
+          const time_point_type& from
+        , const key_type&        key 
+        , const value_type&      value
     )
     {
         auto& time_line = attributes_[key];
-        time_point.add_data(value, time_point);
+        time_line.insert(from, value);
     }
 
-    const value_type& find_attribute(
-          const time_point_type&  time_point
-        , const key_type&         key 
+    void set_value_to(
+          const time_point_type& to
+        , const key_type&        key 
+    )
+    {
+        auto& time_line = attributes_[key];
+        time_line.insert(to);
+    }
+
+    const value_type* get_value(
+          const time_point_type& time_point
+        , const key_type&        key 
     ) const
     {
         auto it = attributes_.find(key); 
-        if (it == attributes_.end()) return time_line_type::invalid_data();
+        if (it == attributes_.end()) return nullptr;
         
-        const auto& time_line = *it;
-        return time_line.find_data(time_point);
+        const auto& time_line = it->second;
+        return time_line.find(time_point);
     }
 
 private:
