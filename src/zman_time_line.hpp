@@ -1,67 +1,58 @@
 #ifndef ZMAN_TIME_LINE_HPP
 #define ZMAN_TIME_LINE_HPP
 
-#include "zman_temporal_data.hpp"
-#include "zman_invalid_data.hpp"
+#include "zman_temporal_value.hpp"
 #include <vector>
 #include <algorithm>
+#include <optional>
 #include <stdexcept>
 
 namespace zman {
 
-template<class TEMPORAL_DATA, class CONTAINER = std::vector<TEMPORAL_DATA>>
+template<
+      class TIME_POINT
+    , class VALUE
+    , class CONTAINER = std::vector<temporal_value<TIME_POINT, std::optional<VALUE>>>
+>
 class time_line
 {
 public:
-    using temporal_data_type = TEMPORAL_DATA;
-    using time_point_type    = typename TEMPORAL_DATA::time_point_type;
-    using data_type          = typename TEMPORAL_DATA::data_type;
-    using container          = CONTAINER;
+    using time_point_type     = TIME_POINT;
+    using value_type          = VALUE;
+    using container           = CONTAINER;
+    using temporal_value_type = typename container::value_type;
+    using optional_value_type = typename temporal_value_type::value_type;
 
     time_line() = default;
 
-    static const data_type& invalid_data()
-    {
-        return zman::invalid_data<data_type>::value;
-    }   
-
-    void add_data(
-          const data_type&        data
-        , const time_point_type&  from
+    void insert(
+          const time_point_type& from
+        , const value_type&      value
     )
     {
-        if (try_add_when_no_values(data, from))    return;
-        if (try_add_when_single_value(data, from)) return;
+        insert(temporal_value_type(from, value));
+    }
 
-        temporal_data_type tdata(data, from); 
-        auto it = std::lower_bound(begin(values), end(values), tdata);
-        if (try_add_at_the_end(it, tdata)) return;
-
-        validate_duplicate_time_point(from, it->time_point()); 
-        
-        auto insert_before_it 
-             = from < it->time_point() 
-             ? it
-             : it + 1; 
-        
-        values.insert(insert_before_it, tdata);
+    void insert(const time_point_type& to)
+    {
+        insert(temporal_value_type(to, optional_value_type()));
     }
     
-    const data_type& find_data(const time_point_type& time_point) const
+    const value_type* find(const time_point_type& time_point) const
     {
         bool no_values = values.empty();
-        if (no_values) return invalid_data();
+        if (no_values) return nullptr;
 
-        temporal_data_type tdata(invalid_data(), time_point); 
-        auto it = std::lower_bound(begin(values), end(values), tdata);
+        temporal_value_type tvalue(value_type{}, time_point); 
+        auto it = std::lower_bound(begin(values), end(values), tvalue);
     
         bool exact_match = it != end(values) && it->time_point() == time_point;
-        if (exact_match) return it->data(); 
+        if (exact_match) return get_ptr_or_null(it->value());
 
-        if (it == begin(values)) return invalid_data();
+        if (it == begin(values)) return nullptr;
 
         auto before = it - 1; 
-        return before->data();
+        return get_ptr_or_null(before->value());
     }
 
     const container& content() 
@@ -70,6 +61,24 @@ public:
     } 
 
 private:
+    void insert(temporal_value_type&& temporal_value)
+    {
+        if (try_add_when_no_values( std::move(temporal_value) ))    return;
+        if (try_add_when_single_value( std::move(temporal_value) )) return;
+
+        auto it = std::lower_bound(begin(values), end(values), temporal_value);
+        if (try_add_at_the_end(it, std::move(temporal_value) )) return;
+
+        validate_duplicate_time_point(temporal_value.time_point(), it->time_point()); 
+        
+        auto insert_before_it 
+             = temporal_value.time_point() < it->time_point() 
+             ? it
+             : it + 1; 
+        
+        values.emplace(insert_before_it, std::move(temporal_value));
+    }
+
     void validate_duplicate_time_point(
           const time_point_type& time_point_1
         , const time_point_type& time_point_2
@@ -81,41 +90,39 @@ private:
         }
     }
 
-    bool try_add_when_no_values(
-          const data_type&        data
-        , const time_point_type&  from
-    )
+    bool try_add_when_no_values(temporal_value_type&& temporal_value) 
     {
         bool no_values = values.empty();
-        if (no_values) values.emplace_back(data, from);
+        if (no_values) values.emplace_back(temporal_value);
         return no_values;
     }
 
-    bool try_add_when_single_value(
-          const data_type&        data
-        , const time_point_type&  from
-    )
+    bool try_add_when_single_value(temporal_value_type&& temporal_value)
     {
         bool single_value = values.size() == 1;
         if (single_value)
         {
-            temporal_data tdata(data, from);
             auto& value = values.front();
-            validate_duplicate_time_point(from, value.time_point());
-            bool insert_before = value.time_point() > from;
-            if (insert_before) values.insert(values.begin(), tdata); 
-            else               values.push_back(tdata); 
+            validate_duplicate_time_point(temporal_value.time_point(), value.time_point());
+            bool insert_before = value.time_point() > temporal_value.time_point();
+            if (insert_before) values.emplace(begin(values), std::move(temporal_value)); 
+            else               values.emplace_back(std::move(temporal_value)); 
         }
         return single_value;
     }
 
     template<class IT>
-    bool try_add_at_the_end(IT it, const temporal_data_type& tdata)
+    bool try_add_at_the_end(IT it, temporal_value_type&& temporal_value)
     {
         bool at_the_end = it == end(values);
-        if (at_the_end) values.push_back(tdata);
+        if (at_the_end) values.emplace_back(std::move(temporal_value));
         return at_the_end;
     }   
+
+    static const value_type* get_ptr_or_null(const optional_value_type& optional_value)
+    {
+        return optional_value ? &optional_value.value() : nullptr;
+    }
        
     container values;
 }; 
