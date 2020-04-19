@@ -171,7 +171,7 @@ TEST_CASE("time_line.insert.permutation")
     }
 }
 
-TEST_CASE("time_line.find_value.empty")
+TEST_CASE("time_line.find.empty")
 {
     using time_line_type   = time_line<int,int>;
     
@@ -180,4 +180,148 @@ TEST_CASE("time_line.find_value.empty")
     CHECK( time_line.find( 1) == nullptr ); 
     CHECK( time_line.find( 5) == nullptr ); 
     CHECK( time_line.find( 7) == nullptr ); 
+}
+
+TEST_CASE("time_line.find.single.value")
+{
+    using time_line_type   = time_line<int,int>;
+    
+    time_line_type time_line;
+    
+    SECTION("from") 
+    {
+        time_line.insert(1, 10);
+        CHECK(  time_line.find(0) == nullptr ); 
+        CHECK( *time_line.find(1) == 10 ); 
+        CHECK( *time_line.find(2) == 10 ); 
+    }
+
+    SECTION("to") 
+    {
+        time_line.insert(1);
+        CHECK( time_line.find(1) == nullptr ); 
+    }
+}
+
+TEST_CASE("time_line.find.from.to")
+{
+    using time_line_type = time_line<int,int>;
+    
+    time_line_type time_line;
+
+    SECTION("from-to")
+    {
+        time_line.insert(1, 10);
+        time_line.insert(2);
+        CHECK(  time_line.find(0) == nullptr ); 
+        CHECK( *time_line.find(1) == 10 ); 
+        CHECK(  time_line.find(2) == nullptr ); 
+        CHECK(  time_line.find(3) == nullptr ); 
+    }
+
+    SECTION("reverse")
+    {
+        time_line.insert(1);
+        time_line.insert(2, 10);
+        CHECK(  time_line.find(0) == nullptr ); 
+        CHECK(  time_line.find(1) == nullptr ); 
+        CHECK( *time_line.find(2) == 10      ); 
+        CHECK( *time_line.find(3) == 10      ); 
+    }
+}
+
+TEST_CASE("time_line.find")
+{
+    using time_line_type = time_line<int,int>;
+    
+    time_line_type time_line;
+
+    time_line.insert(1, 10);
+    CHECK(  time_line.find(0) == nullptr ); 
+    CHECK( *time_line.find(1) == 10      ); 
+    CHECK( *time_line.find(2) == 10      ); 
+    CHECK( *time_line.find(3) == 10      ); 
+    CHECK( *time_line.find(4) == 10      ); 
+    CHECK( *time_line.find(5) == 10      ); 
+    CHECK( *time_line.find(6) == 10      ); 
+    CHECK( *time_line.find(7) == 10      ); 
+
+    time_line.insert(3);
+    CHECK(  time_line.find(0) == nullptr ); 
+    CHECK( *time_line.find(1) == 10      ); 
+    CHECK( *time_line.find(2) == 10      ); 
+    CHECK(  time_line.find(3) == nullptr ); 
+    CHECK(  time_line.find(4) == nullptr ); 
+    CHECK(  time_line.find(5) == nullptr ); 
+    CHECK(  time_line.find(6) == nullptr ); 
+    CHECK(  time_line.find(7) == nullptr ); 
+
+    time_line.insert(7, 11);
+    CHECK(  time_line.find(0) == nullptr ); 
+    CHECK( *time_line.find(1) == 10      ); 
+    CHECK( *time_line.find(2) == 10      ); 
+    CHECK(  time_line.find(3) == nullptr ); 
+    CHECK(  time_line.find(4) == nullptr ); 
+    CHECK(  time_line.find(5) == nullptr ); 
+    CHECK(  time_line.find(6) == nullptr ); 
+    CHECK( *time_line.find(7) == 11      ); 
+
+    time_line.insert(5, 7);
+    CHECK(  time_line.find(0) == nullptr ); 
+    CHECK( *time_line.find(1) == 10      ); 
+    CHECK( *time_line.find(2) == 10      ); 
+    CHECK(  time_line.find(3) == nullptr ); 
+    CHECK(  time_line.find(4) == nullptr ); 
+    CHECK( *time_line.find(5) == 7       ); 
+    CHECK( *time_line.find(6) == 7       ); 
+    CHECK( *time_line.find(7) == 11      );
+
+    time_line.insert(-2, 0);
+    CHECK(  time_line.find(-3) == nullptr ); 
+    CHECK( *time_line.find(-2) == 0       ); 
+    CHECK( *time_line.find(-1) == 0       ); 
+    CHECK( *time_line.find( 0) == 0       ); 
+    CHECK( *time_line.find( 1) == 10      ); 
+    CHECK( *time_line.find( 2) == 10      ); 
+    CHECK(  time_line.find( 3) == nullptr ); 
+    CHECK(  time_line.find( 4) == nullptr ); 
+    CHECK( *time_line.find( 5) == 7       ); 
+    CHECK( *time_line.find( 6) == 7       ); 
+    CHECK( *time_line.find( 7) == 11      );
+
+    time_line.insert(10);
+    CHECK(  time_line.find(-3) == nullptr ); 
+    CHECK( *time_line.find(-2) == 0       ); 
+    CHECK( *time_line.find(-1) == 0       ); 
+    CHECK( *time_line.find( 0) == 0       ); 
+    CHECK( *time_line.find( 1) == 10      ); 
+    CHECK( *time_line.find( 2) == 10      ); 
+    CHECK(  time_line.find( 3) == nullptr ); 
+    CHECK(  time_line.find( 4) == nullptr ); 
+    CHECK( *time_line.find( 5) == 7       ); 
+    CHECK( *time_line.find( 6) == 7       ); 
+    CHECK( *time_line.find( 7) == 11      );
+    CHECK( *time_line.find( 8) == 11      ); 
+    CHECK( *time_line.find( 9) == 11      ); 
+    CHECK(  time_line.find(10) == nullptr ); 
+    CHECK(  time_line.find(11) == nullptr ); 
+    CHECK(  time_line.find(12) == nullptr ); 
+
+    time_line.insert(4);
+    CHECK(  time_line.find(-3) == nullptr ); 
+    CHECK( *time_line.find(-2) == 0       ); 
+    CHECK( *time_line.find(-1) == 0       ); 
+    CHECK( *time_line.find( 0) == 0       ); 
+    CHECK( *time_line.find( 1) == 10      ); 
+    CHECK( *time_line.find( 2) == 10      ); 
+    CHECK(  time_line.find( 3) == nullptr ); 
+    CHECK(  time_line.find( 4) == nullptr ); 
+    CHECK( *time_line.find( 5) == 7       ); 
+    CHECK( *time_line.find( 6) == 7       ); 
+    CHECK( *time_line.find( 7) == 11      );
+    CHECK( *time_line.find( 8) == 11      ); 
+    CHECK( *time_line.find( 9) == 11      ); 
+    CHECK(  time_line.find(10) == nullptr ); 
+    CHECK(  time_line.find(11) == nullptr ); 
+    CHECK(  time_line.find(12) == nullptr );
 }

@@ -43,16 +43,18 @@ public:
         bool no_values = values.empty();
         if (no_values) return nullptr;
 
-        temporal_value_type tvalue(value_type{}, time_point); 
+        temporal_value_type tvalue(time_point, value_type{}); 
         auto it = std::lower_bound(begin(values), end(values), tvalue);
-    
+
         bool exact_match = it != end(values) && it->time_point() == time_point;
         if (exact_match) return get_ptr_or_null(it->value());
 
-        if (it == begin(values)) return nullptr;
+        if (begin(values) == it) return nullptr;
 
         auto before = it - 1; 
-        return get_ptr_or_null(before->value());
+        if (before->time_point() <= time_point) return get_ptr_or_null(before->value());
+
+        return nullptr;
     }
 
     const container& content() 
