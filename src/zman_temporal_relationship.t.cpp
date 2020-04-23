@@ -33,12 +33,52 @@ TEST_CASE("temporal_relationship.ctor")
     id_type     id    = 12;
     label_type  label = "label";
     node_type   node  = 1; 
-    temporal_relationship_type relationship(id, label, &node);
+    temporal_relationship_type relationship(id, label, node);
 
     CHECK( id    == relationship.id()          );
     CHECK( label == relationship.label()       );
-    CHECK( &node == relationship.first_node()  );
+    CHECK( 1     == *relationship.first_node() );
 
     time_point_type time_point = 1;
-    CHECK( nullptr == relationship.second_node(time_point) );
+    CHECK( relationship.second_node(time_point) == nullptr );
+}
+
+TEST_CASE("temporal_relationship.set_second_node_from")
+{
+    id_type     id    = 12;
+    label_type  label = "label";
+    node_type   node  = 1; 
+    temporal_relationship_type relationship(id, label, node);
+
+    relationship.set_second_node_from(1, 10);
+    CHECK( *relationship.second_node(1) == 10 );
+}
+
+TEST_CASE("temporal_relationship.set_second_node_to")
+{
+    id_type     id    = 12;
+    label_type  label = "label";
+    node_type   node  = 1; 
+    temporal_relationship_type relationship(id, label, node);
+
+    relationship.set_second_node_from(1, 10);
+    CHECK( *relationship.second_node(1) == 10      );
+    CHECK( *relationship.second_node(2) == 10      );
+
+    relationship.set_second_node_to(2);
+    CHECK(  relationship.second_node(2) == nullptr );
+}
+
+TEST_CASE("temporal_relationship.second_node")
+{
+    id_type     id    = 12;
+    label_type  label = "label";
+    node_type   node  = 1; 
+    temporal_relationship_type relationship(id, label, node);
+
+    CHECK(  relationship.second_node(1) == nullptr );
+    relationship.set_second_node_from(1, 10);
+    CHECK( *relationship.second_node(1) == 10 );
+    CHECK( *relationship.second_node(2) == 10 );
+    CHECK(  relationship.second_node(0) == nullptr );
 }

@@ -20,7 +20,7 @@ public:
     temporal_relationship(
           const id_type&    id
         , const label_type& label
-        , const node_type*  node
+        , const node_type&  node
     )
     : base_type(id, label)
     , first_node_(node)
@@ -28,7 +28,20 @@ public:
     {
     }
 
-    const node_type* first_node() const { return first_node_; }
+    const node_type* first_node() const { return &first_node_; }
+
+    void set_second_node_from(
+          const time_point_type& from
+        , const node_type&       node
+    )
+    {
+        time_line_.insert(from, node);
+    }
+
+    void set_second_node_to(const time_point_type& to)
+    {
+        time_line_.insert(to);
+    }
 
     const node_type* second_node(const time_point_type& time_point) const
     {
@@ -36,8 +49,8 @@ public:
     }
 
 private:
-    const node_type* first_node_;
-    time_line_type   time_line_; 
+    node_type      first_node_;
+    time_line_type time_line_; 
 }; 
 
 }
