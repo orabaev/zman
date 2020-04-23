@@ -26,8 +26,8 @@ using temporal_node_ptr          = std::shared_ptr<temporal_node_type>;
 
 TEST_CASE("temporal_relationship.defaults")
 {
-    static_assert( std::is_move_constructible<temporal_relationship_type>::value    );
-    static_assert( std::is_move_assignable<temporal_relationship_type>::value       );
+    static_assert( std::is_move_constructible<temporal_relationship_type>::value );
+    static_assert( std::is_move_assignable<temporal_relationship_type>::value    );
 }
 
 TEST_CASE("temporal_relationship.ctor")
@@ -43,7 +43,7 @@ TEST_CASE("temporal_relationship.ctor")
     CHECK( relationship.find_node(time_point) == nullptr );
 }
 
-TEST_CASE("temporal_relationship.insert")
+TEST_CASE("temporal_relationship.insert_node_from")
 {
     temporal_relationship_type relationship(101, "label");
 
@@ -52,33 +52,31 @@ TEST_CASE("temporal_relationship.insert")
     CHECK( relationship.find_node(1)->id() == 201);
 }
 
-/*
-TEST_CASE("temporal_relationship.set_second_node_to")
+TEST_CASE("temporal_relationship.insert_to")
 {
-    id_type     id    = 12;
-    label_type  label = "label";
-    node_type   node  = 1; 
-    temporal_relationship_type relationship(id, label, node);
+    temporal_relationship_type relationship(101, "label");
 
-    relationship.set_second_node_from(1, 10);
-    CHECK( *relationship.second_node(1) == 10      );
-    CHECK( *relationship.second_node(2) == 10      );
-
-    relationship.set_second_node_to(2);
-    CHECK(  relationship.second_node(2) == nullptr );
+    auto node = make_shared<temporal_node_type>(201, "node");
+    relationship.insert_node_from(1, node);
+    CHECK( relationship.find_node(1)->id() == 201);
+    CHECK( relationship.find_node(2)->id() == 201);
+    relationship.insert_to(2);
+    CHECK( relationship.find_node(2) == nullptr);
 }
 
-TEST_CASE("temporal_relationship.second_node")
+TEST_CASE("temporal_relationship.find_node")
 {
-    id_type     id    = 12;
-    label_type  label = "label";
-    node_type   node  = 1; 
-    temporal_relationship_type relationship(id, label, node);
+    temporal_relationship_type relationship(101, "label");
 
-    CHECK(  relationship.second_node(1) == nullptr );
-    relationship.set_second_node_from(1, 10);
-    CHECK( *relationship.second_node(1) == 10 );
-    CHECK( *relationship.second_node(2) == 10 );
-    CHECK(  relationship.second_node(0) == nullptr );
+    CHECK( relationship.find_node(1) == nullptr);
+    
+    {
+        auto node = make_shared<temporal_node_type>(201, "node");
+        relationship.insert_node_from(1, node);
+        CHECK( relationship.find_node(1)->id() == 201);
+    }
+
+    CHECK( relationship.find_node(1) == nullptr);
+
 }
-*/
+
