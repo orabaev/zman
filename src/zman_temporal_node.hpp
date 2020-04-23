@@ -70,20 +70,43 @@ public:
     using attribute_key_type       = typename base_type::attribute_key_type;
     using attribute_value_type     = typename base_type::attribute_value_type;
     using relationship_type        = temporal_relationship;
+    using node_weak_ptr_type       = std::weak_ptr<temporal_node>;
 
     temporal_node(const id_type& id, const label_type& label)
     : base_type(id, label)
     {
     }
 
+    void set_relationship_from(
+          const label_type&         label
+        , const time_point_type&    from
+        , const node_weak_ptr_type& node
+    )
+    {
+        relationships_[label].insert_node_from(from, node);
+    }
+
+    void set_relationship_to(
+          const label_type&         label
+        , const time_point_type&    to
+    )
+    {
+        relationships_[label].insert_to(to);
+    }
+
+    temporal_node* find_relationship(
+          const label_type&         label
+        , const time_point_type&    time_point
+    )
+    {
+        auto it = relationships_[label].find(time_point);
+        if (it == relationships_.end()) return nullptr;  
+        return it->find_node(time_point);
+    }
+
 private:
-     
-
+    std::unordered_map<label_type, temporal_relationship> relationships_;
 };
-
-/*
- 
-*/
 
 }
 
