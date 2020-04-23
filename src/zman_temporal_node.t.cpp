@@ -2,7 +2,7 @@
 #include "zman_temporal_entity.hpp"
 #include "zman_time_line.hpp"
 #include "zman_temporal_attributes.hpp"
-#include "zman_temporal_relationship.hpp"
+#include "zman_temporal_node.hpp"
 
 #include <string>
 #include <type_traits>
@@ -20,7 +20,9 @@ using label_type                 = string;
 using temporal_entity_type       = temporal_entity<id_type, label_type, temporal_attributes_type>;
 using node_time_line_type        = time_line<time_point_type, int>;
 using node_type                  = int;
-using temporal_relationship_type = temporal_relationship<temporal_entity_type, node_time_line_type>;
+using temporal_node_type         = temporal_node<temporal_entity_type>;
+using temporal_relationship_type = typename temporal_node_type::relationship_type; 
+using temporal_node_ptr          = std::shared_ptr<temporal_node_type>;
 
 TEST_CASE("temporal_relationship.defaults")
 {
@@ -32,28 +34,25 @@ TEST_CASE("temporal_relationship.ctor")
 {
     id_type     id    = 12;
     label_type  label = "label";
-    node_type   node  = 1; 
-    temporal_relationship_type relationship(id, label, node);
+    temporal_relationship_type relationship(id, label);
 
-    CHECK( id    == relationship.id()          );
-    CHECK( label == relationship.label()       );
-    CHECK( 1     == *relationship.first_node() );
+    CHECK( id    == relationship.id()    );
+    CHECK( label == relationship.label() );
 
     time_point_type time_point = 1;
-    CHECK( relationship.second_node(time_point) == nullptr );
+    CHECK( relationship.find_node(time_point) == nullptr );
 }
 
-TEST_CASE("temporal_relationship.set_second_node_from")
+TEST_CASE("temporal_relationship.insert")
 {
-    id_type     id    = 12;
-    label_type  label = "label";
-    node_type   node  = 1; 
-    temporal_relationship_type relationship(id, label, node);
+    temporal_relationship_type relationship(101, "label");
 
-    relationship.set_second_node_from(1, 10);
-    CHECK( *relationship.second_node(1) == 10 );
+    auto node = make_shared<temporal_node_type>(201, "node");
+    relationship.insert_node_from(1, node);
+    CHECK( relationship.find_node(1)->id() == 201);
 }
 
+/*
 TEST_CASE("temporal_relationship.set_second_node_to")
 {
     id_type     id    = 12;
@@ -82,3 +81,4 @@ TEST_CASE("temporal_relationship.second_node")
     CHECK( *relationship.second_node(2) == 10 );
     CHECK(  relationship.second_node(0) == nullptr );
 }
+*/
