@@ -56,7 +56,7 @@ struct temporal_convert
         for (auto& temporal_value : temporal_array)
         {
             auto optional_value = to_non_temporal_type(timepoint, temporal_value);
-            if (optional_value) array.push_back(*optional_value); 
+            if (optional_value) array.push_back(std::move(*optional_value)); 
         } 
         
         return !array.empty() ? std::optional<array_type>(std::move(array)) : std::nullopt;
@@ -93,8 +93,6 @@ struct temporal_convert
         }, temporal_attribute);  
         return ret;
     } 
-    
-
 }; 
 
 }
