@@ -24,6 +24,12 @@ struct attribute_value
 
     using type = std::variant<
           value_type
+        , array_type
+        , unordered_map_type
+    >;
+
+    using temporal_type = std::variant<
+          value_type
         , temporal_value_type 
         , array_type
         , temporal_array_type
