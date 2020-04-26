@@ -3,7 +3,6 @@
 
 #include "zman_time_line.hpp"
 #include <vector>
-#include <unordered_map>
 #include <variant>
 #include <optional>
 
@@ -20,13 +19,10 @@ struct attribute_value
     using temporal_value_type           = time_line<timepoint_type, value_type>;
     using array_type                    = std::vector<value_type>;
     using temporal_array_type           = std::vector<temporal_value_type>;
-    using unordered_map_type            = std::unordered_map<key_type, value_type>;
-    using temporal_unordered_map_type   = std::unordered_map<key_type, temporal_value_type>;
 
     using type = std::variant<
           value_type
         , array_type
-        , unordered_map_type
     >;
 
     using temporal_type = std::variant<
@@ -34,8 +30,6 @@ struct attribute_value
         , temporal_value_type 
         , array_type
         , temporal_array_type
-        , unordered_map_type
-        , temporal_unordered_map_type
     >;
 
     static std::optional<value_type> to_value_type(
