@@ -22,20 +22,13 @@ struct temporal_convert
     using attribute_map_type          = typename attribute_map::type;
     using attribute_map_temporal_type = typename attribute_map::temporal_type;
     
-    static std::optional<value_type> to_non_temporal_type(
-          const timepoint_type&  timepoint
-        , const value_type&      value
+    template<class NON_TEMPORAL_TYPE>
+    static std::optional<NON_TEMPORAL_TYPE> to_non_temporal_type(
+          const timepoint_type&    timepoint
+        , const NON_TEMPORAL_TYPE& value
     )
     {
-        return std::optional<value_type>(value);
-    }
-
-    static std::optional<array_type> to_non_temporal_type(
-          const timepoint_type&  timepoint
-        , const array_type&      value
-    )
-    {
-        return std::optional<array_type>(value);
+        return std::optional<NON_TEMPORAL_TYPE>(value);
     }
 
     static std::optional<value_type> to_non_temporal_type(
@@ -93,6 +86,20 @@ struct temporal_convert
         }, temporal_attribute);  
         return ret;
     } 
+
+/*
+    static std::optional<attribute_map_type> to_non_temporal_type(
+          const timepoint_type&     timepoint
+        , const attribute_map_type& temporal_attribute
+    )
+    {
+        return ret;
+    } 
+*/
+
+
+
+
 }; 
 
 }
