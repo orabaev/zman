@@ -10,6 +10,7 @@ test_sources = [
      , 'src/zman_time_line.t.cpp'
      , 'src/zman_entity.t.cpp'
      , 'src/zman_attribute_value.t.cpp'
+     , 'src/zman_temporal_convert.t.cpp'
 ]
 
 exec = executable(
