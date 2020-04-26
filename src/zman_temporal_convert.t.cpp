@@ -6,9 +6,10 @@ using namespace zman;
 using namespace std;
 
 using time_point_type = int;
+using key_type        = string;
 using value_type      = int;
-using convert         = temporal_convert<time_point_type, value_type>;
-using attribute_t     = convert::attribute_value_type; 
+using convert         = temporal_convert<time_point_type, key_type, value_type>;
+using attribute_t     = typename convert::attribute; 
 
 TEST_CASE("temporal_convert.to_value_type")
 {

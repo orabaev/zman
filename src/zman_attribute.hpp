@@ -1,5 +1,5 @@
-#ifndef ZMAN_ATTRIBUTE_VALUE_HPP
-#define ZMAN_ATTRIBUTE_VALUE_HPP
+#ifndef ZMAN_ATTRIBUTE_HPP
+#define ZMAN_ATTRIBUTE_HPP
 
 #include "zman_time_line.hpp"
 #include <vector>
@@ -9,9 +9,9 @@
 namespace zman {
 
 template<class TIMEPOINT, class VALUE>
-struct attribute_value
+struct attribute
 {
-    attribute_value() = delete;
+    attribute() = delete;
     
     using timepoint_type                = TIMEPOINT; 
     using value_type                    = VALUE; 
