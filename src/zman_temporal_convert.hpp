@@ -22,8 +22,6 @@ struct temporal_convert
     using attribute_map_type          = typename attribute_map::type;
     using attribute_map_temporal_type = typename attribute_map::temporal_type;
     
-    
-    
     static std::optional<value_type> to_non_temporal_type(
           const timepoint_type&  timepoint
         , const value_type&      value
@@ -64,16 +62,37 @@ struct temporal_convert
         return !array.empty() ? std::optional<array_type>(std::move(array)) : std::nullopt;
     }
 
-/*
-    static std::optional<attribute_type> to_attribute_type(
+    static std::optional<attribute_type> to_non_temporal_type(
+          const timepoint_type& timepoint
+        , const attribute_type& non_temporal_attribute
+    )
+    {
+        std::optional<attribute_type> ret;
+        std::visit([&timepoint, &ret](auto&& arg){
+            auto optional_value = to_non_temporal_type(timepoint, arg);
+            ret = optional_value 
+                   ? std::optional<attribute_type>(std::move(*optional_value)) 
+                   : std::nullopt;
+            
+        }, non_temporal_attribute);  
+        return ret;
+    }
+
+    static std::optional<attribute_type> to_non_temporal_type(
           const timepoint_type&          timepoint
         , const attribute_temporal_type& temporal_attribute
     )
     {
-          
-
+        std::optional<attribute_type> ret;
+        std::visit([&timepoint, &ret](auto&& arg){
+            auto optional_value = to_non_temporal_type(timepoint, arg);
+            ret = optional_value 
+                   ? std::optional<attribute_type>(std::move(*optional_value))
+                   : std::nullopt;
+            
+        }, temporal_attribute);  
+        return ret;
     } 
-*/
     
 
 }; 

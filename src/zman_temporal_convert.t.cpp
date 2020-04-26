@@ -95,3 +95,84 @@ TEST_CASE("temporal_convert.to_non_temporal_type.temporal_array")
     optional_value = convert::to_non_temporal_type(timepoint, temporal_array);
     CHECK_FALSE( optional_value ); 
 }
+
+TEST_CASE("temporal_convert.to_non_temporal_type.attribute")
+{
+    attribute_t::timepoint_type timepoint = 1;
+
+    SECTION("value_type")
+    {
+        attribute_t::type value(12);
+        auto optional_value = convert::to_non_temporal_type(timepoint, value);
+        CHECK( *optional_value == value );
+    }
+
+    SECTION("array_type")
+    {
+        attribute_t::array_type  array{1,2,3};
+        attribute_t::type        value(array);
+        auto optional_value = convert::to_non_temporal_type(timepoint, value);
+        CHECK( *optional_value == value );
+    }
+}
+
+TEST_CASE("temporal_convert.to_non_temporal_type.temporal_attribute")
+{
+    attribute_t::timepoint_type timepoint = 1;
+    attribute_t::timepoint_type invalid_timepoint = 0;
+
+    SECTION("value_type")
+    {
+        attribute_t::temporal_type  value(12);
+        attribute_t::type           expected(12);
+        auto optional_value = convert::to_non_temporal_type(timepoint, value);
+        CHECK( *optional_value == expected );
+        optional_value = convert::to_non_temporal_type(invalid_timepoint, value);
+        CHECK( *optional_value == expected );
+    }
+
+    SECTION("array_type")
+    {
+        attribute_t::array_type    array{1,2,3};
+        attribute_t::temporal_type value(array);
+        attribute_t::type          expected(array);
+        auto optional_value = convert::to_non_temporal_type(timepoint, value);
+        CHECK( *optional_value == expected );
+        optional_value = convert::to_non_temporal_type(invalid_timepoint, value);
+        CHECK( *optional_value == expected );
+    }
+
+    SECTION("temporal_value_type")
+    {
+        attribute_t::temporal_value_type temporal_value;
+        temporal_value.insert(timepoint, 7);
+        attribute_t::temporal_type value(temporal_value);
+        attribute_t::type expected = 7;
+        auto optional_value = convert::to_non_temporal_type(timepoint, value);
+        CHECK( *optional_value == expected );
+        optional_value = convert::to_non_temporal_type(invalid_timepoint, value);
+        CHECK_FALSE( optional_value );
+    }
+
+    SECTION("temporal_array_type")
+    {
+        attribute_t::temporal_array_type temporal_array;
+        {
+            attribute_t::temporal_value_type temporal_value;
+            temporal_value.insert(timepoint, 1);
+            temporal_array.push_back(temporal_value);
+        }
+        {
+            attribute_t::temporal_value_type temporal_value;
+            temporal_value.insert(timepoint, 2);
+            temporal_array.push_back(temporal_value);
+        }
+        attribute_t::temporal_type value(temporal_array);
+        attribute_t::array_type    array{1,2};
+        attribute_t::type          expected(array);
+        auto optional_value = convert::to_non_temporal_type(timepoint, value);
+        CHECK( *optional_value == expected );
+        optional_value = convert::to_non_temporal_type(invalid_timepoint, value);
+        CHECK_FALSE( optional_value );
+    }
+}
