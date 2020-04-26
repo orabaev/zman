@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <variant>
+#include <optional>
 
 namespace zman {
 
@@ -36,6 +37,15 @@ struct attribute_value
         , unordered_map_type
         , temporal_unordered_map_type
     >;
+
+    static std::optional<value_type> to_value_type(
+          const timepoint_type&      timepoint
+        , const temporal_value_type& temporal_value
+    )
+    {
+        auto ptr = temporal_value.find(timepoint);
+        return ptr ? std::optional<value_type>(*ptr) : std::nullopt;
+    }
 }; 
 
 }
