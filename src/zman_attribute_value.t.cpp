@@ -43,10 +43,8 @@ TEST_CASE("attribute_value.to_value_type")
     timepoint = 3;
     temporal_value.insert(timepoint);
     
-    std::optional<attribute_t::value_type> optional_value;
-
     timepoint = 1;
-    optional_value = attribute_t::to_value_type(timepoint, temporal_value);
+    auto optional_value = attribute_t::to_value_type(timepoint, temporal_value);
     CHECK( *optional_value == 10 ); 
 
     timepoint = 2;
@@ -55,5 +53,50 @@ TEST_CASE("attribute_value.to_value_type")
 
     timepoint = 3;
     optional_value = attribute_t::to_value_type(timepoint, temporal_value);
+    CHECK_FALSE( optional_value ); 
+}
+
+TEST_CASE("attribute_value.to_array_type")
+{
+    attribute_t::temporal_array_type temporal_array;    
+    attribute_t::temporal_value_type temporal_value;
+
+    attribute_t::timepoint_type timepoint;
+    { 
+        timepoint = 1;
+        attribute_t::value_type     value     = 10;
+        temporal_value.insert(timepoint, value);
+        timepoint = 3;
+        temporal_value.insert(timepoint);
+        temporal_array.push_back(std::move(temporal_value));
+    }
+
+    { 
+        timepoint = 2;
+        attribute_t::value_type     value     = 55;
+        temporal_value.insert(timepoint, value);
+        timepoint = 4;
+        temporal_value.insert(timepoint);
+        temporal_array.push_back(std::move(temporal_value));
+    }
+    
+    timepoint = 1;
+    auto optional_value = attribute_t::to_array_type(timepoint, temporal_array);
+    CHECK( (*optional_value).size() ==  1 ); 
+    CHECK( (*optional_value)[0]     == 10 ); 
+
+    timepoint = 2;
+    optional_value = attribute_t::to_array_type(timepoint, temporal_array);
+    CHECK( (*optional_value).size() ==  2 ); 
+    CHECK( (*optional_value)[0]     == 10 );
+    CHECK( (*optional_value)[1]     == 55 );
+
+    timepoint = 3;
+    optional_value = attribute_t::to_array_type(timepoint, temporal_array);
+    CHECK( (*optional_value).size() ==  1 ); 
+    CHECK( (*optional_value)[0]     == 55 );
+
+    timepoint = 4;
+    optional_value = attribute_t::to_array_type(timepoint, temporal_array);
     CHECK_FALSE( optional_value ); 
 }

@@ -46,6 +46,21 @@ struct attribute_value
         auto ptr = temporal_value.find(timepoint);
         return ptr ? std::optional<value_type>(*ptr) : std::nullopt;
     }
+
+    static std::optional<array_type> to_array_type(
+          const timepoint_type&      timepoint
+        , const temporal_array_type& temporal_array
+    )
+    {
+        array_type array;
+        for (auto& temporal_value : temporal_array)
+        {
+            auto optional_value = to_value_type(timepoint, temporal_value);
+            if (optional_value) array.push_back(*optional_value); 
+        } 
+        
+        return !array.empty() ? std::optional<array_type>(std::move(array)) : std::nullopt;
+    }
 }; 
 
 }
