@@ -32,6 +32,16 @@ struct test_util
         return array_type(list);
     }
 
+    static attribute_type attribute_as_value(const value_type& val)
+    {
+        return attribute_type(value(val));
+    }
+
+    static attribute_type attribute_as_array(std::initializer_list<value_type> list)
+    {
+        return attribute_type(array(list));
+    }
+
     static temporal_value_type temporal_value(
         std::initializer_list<typename temporal_value_type::temporal_value_type> list
     )

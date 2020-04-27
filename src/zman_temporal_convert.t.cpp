@@ -16,7 +16,7 @@ using tu              = test_util<time_point_type, key_type, value_type>;
 TEST_CASE("temporal_convert.to_non_temporal_type.value")
 {
     attribute_t::timepoint_type timepoint = 1;
-    value_type                  value     = 12;
+    auto value = tu::value(12);
     auto optional_value = convert::to_non_temporal_type(timepoint, value);
     CHECK( *optional_value == value );
 }
@@ -24,7 +24,7 @@ TEST_CASE("temporal_convert.to_non_temporal_type.value")
 TEST_CASE("temporal_convert.to_non_temporal_type.array")
 {
     attribute_t::timepoint_type timepoint = 1;
-    attribute_t::array_type     array{1,2,3};
+    auto array = tu::array({1,2,3});
     auto optional_value = convert::to_non_temporal_type(timepoint, array);
     CHECK( *optional_value == array );
 }
@@ -35,17 +35,16 @@ TEST_CASE("temporal_convert.to_non_temporal_type.attribute")
 
     SECTION("value_type")
     {
-        attribute_t::type value(12);
-        auto optional_value = convert::to_non_temporal_type(timepoint, value);
-        CHECK( *optional_value == value );
+        auto attribute = tu::attribute_as_value(12);
+        auto optional_value = convert::to_non_temporal_type(timepoint, attribute);
+        CHECK( *optional_value == attribute );
     }
 
     SECTION("array_type")
     {
-        attribute_t::array_type  array{1,2,3};
-        attribute_t::type        value(array);
-        auto optional_value = convert::to_non_temporal_type(timepoint, value);
-        CHECK( *optional_value == value );
+        auto attribute = tu::attribute_as_array({1,2,3});
+        auto optional_value = convert::to_non_temporal_type(timepoint, attribute);
+        CHECK( *optional_value == attribute);
     }
 }
 
