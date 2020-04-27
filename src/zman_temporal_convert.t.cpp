@@ -1,5 +1,6 @@
 #include "catch/catch.hpp"
 #include "zman_temporal_convert.hpp"
+#include "zman_test_util.t.hpp"
 #include <type_traits>
 
 using namespace zman;
@@ -10,6 +11,7 @@ using key_type        = string;
 using value_type      = int;
 using convert         = temporal_convert<time_point_type, key_type, value_type>;
 using attribute_t     = typename convert::attribute; 
+using tu              = test_util<time_point_type, key_type, value_type>;
 
 TEST_CASE("temporal_convert.to_non_temporal_type.value")
 {
@@ -60,16 +62,9 @@ TEST_CASE("temporal_convert.to_non_temporal_type.attribute_map")
 
 TEST_CASE("temporal_convert.to_non_temporal_type.temporal_value")
 {
-    attribute_t::temporal_value_type temporal_value;    
+    auto temporal_value = tu::temporal_value({{1,10},{3,std::nullopt}});
 
     attribute_t::timepoint_type timepoint = 1;
-    attribute_t::value_type     value     = 10;
-    temporal_value.insert(timepoint, value);
-
-    timepoint = 3;
-    temporal_value.insert(timepoint);
-    
-    timepoint = 1;
     auto optional_value = convert::to_non_temporal_type(timepoint, temporal_value);
     CHECK( *optional_value == 10 ); 
 

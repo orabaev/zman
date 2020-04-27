@@ -12,6 +12,7 @@ test_sources = [
      , 'src/zman_attribute.t.cpp'
      , 'src/zman_attribute_map.t.cpp'
      , 'src/zman_temporal_convert.t.cpp'
+     , 'src/zman_test_util.t.cpp'
 ]
 
 exec = executable(
