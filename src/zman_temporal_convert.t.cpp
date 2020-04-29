@@ -35,14 +35,14 @@ TEST_CASE("temporal_convert.to_non_temporal_type.attribute")
 
     SECTION("value_type")
     {
-        auto attribute = tu::attribute_as_value(12);
+        attribute_t::type attribute = tu::value(12);
         auto optional_value = convert::to_non_temporal_type(timepoint, attribute);
         CHECK( *optional_value == attribute );
     }
 
     SECTION("array_type")
     {
-        auto attribute = tu::attribute_as_array({1,2,3});
+        attribute_t::type attribute = tu::array({1,2,3});
         auto optional_value = convert::to_non_temporal_type(timepoint, attribute);
         CHECK( *optional_value == attribute);
     }
@@ -81,26 +81,10 @@ TEST_CASE("temporal_convert.to_non_temporal_type.temporal_array")
     attribute_t::temporal_array_type temporal_array;    
     attribute_t::temporal_value_type temporal_value;
 
-    attribute_t::timepoint_type timepoint;
-    { 
-        timepoint = 1;
-        attribute_t::value_type     value     = 10;
-        temporal_value.insert(timepoint, value);
-        timepoint = 3;
-        temporal_value.insert(timepoint);
-        temporal_array.push_back(std::move(temporal_value));
-    }
+    temporal_array.emplace_back( tu::temporal_value({{1,10},{3,std::nullopt}}) );
+    temporal_array.emplace_back( tu::temporal_value({{2,55},{4,std::nullopt}})  );
 
-    { 
-        timepoint = 2;
-        attribute_t::value_type     value     = 55;
-        temporal_value.insert(timepoint, value);
-        timepoint = 4;
-        temporal_value.insert(timepoint);
-        temporal_array.push_back(std::move(temporal_value));
-    }
-    
-    timepoint = 1;
+    attribute_t::timepoint_type timepoint = 1;
     auto optional_value = convert::to_non_temporal_type(timepoint, temporal_array);
     CHECK( (*optional_value).size() ==  1 ); 
     CHECK( (*optional_value)[0]     == 10 ); 
@@ -149,35 +133,27 @@ TEST_CASE("temporal_convert.to_non_temporal_type.temporal_attribute")
 
     SECTION("temporal_value_type")
     {
-        attribute_t::temporal_value_type temporal_value;
-        temporal_value.insert(timepoint, 7);
-        attribute_t::temporal_type value(temporal_value);
+        attribute_t::temporal_type attribute = tu::temporal_value({{timepoint,7}});
         attribute_t::type expected = 7;
-        auto optional_value = convert::to_non_temporal_type(timepoint, value);
+        auto optional_value = convert::to_non_temporal_type(timepoint, attribute);
         CHECK( *optional_value == expected );
-        optional_value = convert::to_non_temporal_type(invalid_timepoint, value);
+        optional_value = convert::to_non_temporal_type(invalid_timepoint, attribute);
         CHECK_FALSE( optional_value );
     }
 
     SECTION("temporal_array_type")
     {
         attribute_t::temporal_array_type temporal_array;
-        {
-            attribute_t::temporal_value_type temporal_value;
-            temporal_value.insert(timepoint, 1);
-            temporal_array.push_back(temporal_value);
-        }
-        {
-            attribute_t::temporal_value_type temporal_value;
-            temporal_value.insert(timepoint, 2);
-            temporal_array.push_back(temporal_value);
-        }
-        attribute_t::temporal_type value(temporal_array);
+
+        temporal_array.emplace_back( tu::temporal_value({{timepoint,1}}) );
+        temporal_array.emplace_back( tu::temporal_value({{timepoint,2}}) );
+
+        attribute_t::temporal_type attribute = temporal_array;
         attribute_t::array_type    array{1,2};
         attribute_t::type          expected(array);
-        auto optional_value = convert::to_non_temporal_type(timepoint, value);
+        auto optional_value = convert::to_non_temporal_type(timepoint, attribute);
         CHECK( *optional_value == expected );
-        optional_value = convert::to_non_temporal_type(invalid_timepoint, value);
+        optional_value = convert::to_non_temporal_type(invalid_timepoint, attribute);
         CHECK_FALSE( optional_value );
     }
 }
@@ -189,11 +165,11 @@ TEST_CASE("temporal_convert.to_non_temporal_type.attribute_temporal_map")
     convert::attribute_map_temporal_type map;
     
     map["key1"] = 1;
-    map["key2"] = attribute_t::array_type{1,2,3};
+    map["key2"] = tu::array({1,2,3});
 
     convert::attribute_map_type expected;
     expected["key1"] = 1;
-    expected["key2"] = attribute_t::array_type{1,2,3};
+    expected["key2"] = tu::array({1,2,3});
     
     auto optional_value = convert::to_non_temporal_type(timepoint, map);
     CHECK( optional_value );
@@ -202,9 +178,7 @@ TEST_CASE("temporal_convert.to_non_temporal_type.attribute_temporal_map")
     CHECK( *optional_value == expected );
 
     // TEMPORAL VALUE
-    attribute_t::temporal_value_type temporal_value;
-    temporal_value.insert(timepoint, 7);
-    map["key3"] = temporal_value;
+    map["key3"] = tu::temporal_value({{timepoint, 7}});
     optional_value = convert::to_non_temporal_type(timepoint, map);
     CHECK( *optional_value != expected );
     optional_value = convert::to_non_temporal_type(invalid_timepoint, map);
@@ -218,21 +192,14 @@ TEST_CASE("temporal_convert.to_non_temporal_type.attribute_temporal_map")
 
     // TEMPORAL ARRAY
     attribute_t::temporal_array_type temporal_array;
-    {
-        attribute_t::temporal_value_type temporal_value;
-        temporal_value.insert(timepoint, 1);
-        temporal_array.push_back(temporal_value);
-    }
-    {
-        attribute_t::temporal_value_type temporal_value;
-        temporal_value.insert(timepoint, 2);
-        temporal_array.push_back(temporal_value);
-    }
-    map["key4"] = attribute_t::temporal_type(temporal_array);
+    temporal_array.emplace_back( tu::temporal_value({{timepoint,1}}) );
+    temporal_array.emplace_back( tu::temporal_value({{timepoint,2}}) );
+
+    map["key4"] = temporal_array;
     optional_value = convert::to_non_temporal_type(timepoint, map);
     CHECK( *optional_value != expected );
      
-    expected["key4"] = attribute_t::array_type{1,2};
+    expected["key4"] = tu::array({1,2});
     optional_value = convert::to_non_temporal_type(timepoint, map);
     CHECK( *optional_value == expected );
     optional_value = convert::to_non_temporal_type(invalid_timepoint, map);
@@ -244,13 +211,11 @@ TEST_CASE("temporal_convert.to_non_temporal_type.attribute_temporal_map.no_value
     attribute_t::timepoint_type          timepoint         = 1;
     attribute_t::timepoint_type          invalid_timepoint = 0;
     convert::attribute_map_temporal_type map;
+    convert::attribute_map_type          expected;
 
-    convert::attribute_map_type expected;
     expected["key1"] = 7;
+    map["key1"] = tu::temporal_value({{timepoint,7}});
 
-    attribute_t::temporal_value_type temporal_value;
-    temporal_value.insert(timepoint, 7);
-    map["key1"] = temporal_value;
     auto optional_value = convert::to_non_temporal_type(timepoint, map);
     CHECK( *optional_value == expected );
     optional_value = convert::to_non_temporal_type(invalid_timepoint, map);
