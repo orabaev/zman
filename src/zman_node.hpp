@@ -36,8 +36,6 @@ public:
 
     virtual ~node() {} 
 
-    attribute_type* get_attribute_value(const key_type& key);
-
     std::optional<attribute_type> get_attribute_value(
           const timepoint_type& timepoint
         , const key_type& key
