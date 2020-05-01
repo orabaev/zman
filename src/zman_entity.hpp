@@ -1,5 +1,5 @@
-#ifndef ZMAN_TEMPORAL_OBJECT_HPP
-#define ZMAN_TEMPORAL_OBJECT_HPP
+#ifndef ZMAN_ENTITY_HPP
+#define ZMAN_ENTITY_HPP
 
 #include <memory>
 
@@ -13,7 +13,7 @@ public:
     using id_type        = ID;
     using ptr_type       = std::shared_ptr<entity>;
     using weak_ptr_type  = std::weak_ptr<entity>;
-
+  
     entity(
           const namespace_type& namespac
         , const id_type&        id
@@ -29,8 +29,10 @@ public:
     const id_type& id() const { return id_; }
 
 private:
+
     namespace_type namespace_;
     id_type        id_;
+
 }; 
 
 }
