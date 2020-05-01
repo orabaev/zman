@@ -3,6 +3,7 @@
 
 #include "zman_entity.hpp"
 #include "zman_attribute_map.hpp"
+#include <optional>
 
 namespace zman {
 
@@ -16,21 +17,14 @@ template<
 class node : public entity<NAMESPACE, ID>
 {
 public:
-    using namespace_type        = NAMESPACE;
-    using id_type               = ID;
-    using timepoint_type        = TIMEPOINT; 
-    using key_type              = KEY;
-    using attribute_map         = attribute_map<TIMEPOINT, KEY, VALUE>;
-
-    using attribute             = typename attribute_map::attribute;
-    using attribute_type        = typename attribute::temporal_type;
-
-/*
-    using value_type            = typename attribute::value_type;  
-    using temporal_value_type   = typename attribute::temporal_value_type;
-    using array_type            = typename attribute::array_type;
-    using temporal_array_type   = typename attribute::temporal_array_type;
-*/
+    using namespace_type    = NAMESPACE;
+    using id_type           = ID;
+    using timepoint_type    = TIMEPOINT; 
+    using key_type          = KEY;
+    using attribute_map     = attribute_map<TIMEPOINT, KEY, VALUE>;
+    using map_type          = typename attribute_map::temporal_type;
+    using attribute         = typename attribute_map::attribute;
+    using attribute_type    = typename attribute::temporal_type;
 
     node(
           const namespace_type& namespac
@@ -42,9 +36,19 @@ public:
 
     virtual ~node() {} 
 
+    attribute_type* get_attribute_value(const key_type& key);
+
+    std::optional<attribute_type> get_attribute_value(
+          const timepoint_type& timepoint
+        , const key_type& key
+    ) const;
+
+    void set_attribute_value(const attribute_type& value);
+    void set_attribute_value(attribute_type&& value);
+
+    const map_type& get_attributes() const;
 
 private:
-    using map_type = typename attribute_map::temporal_type;
     map_type attributes_;
 }; 
 
