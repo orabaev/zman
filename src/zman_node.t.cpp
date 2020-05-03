@@ -1,5 +1,6 @@
 #include "catch/catch.hpp"
 #include "zman_node.hpp"
+#include "zman_test_util.t.hpp"
 #include <string>
 #include <type_traits>
 
@@ -20,6 +21,9 @@ using node_type = node<
     , value_type
 >;
 
+using attribute_t = typename node_type::attribute;
+using tu          = test_util<time_point_type, key_type, value_type>;
+
 TEST_CASE("node.defaults")
 {
     static_assert( std::is_move_constructible<node_type>::value    );
@@ -32,3 +36,13 @@ TEST_CASE("node.ctor")
     CHECK( "namespace.node" == node.entity_namespace() );
     CHECK( 1 == node.id() );
 }
+
+TEST_CASE("node.set_attribute_value")
+{
+    node_type node("namespace.node", 1);
+    attribute_t::temporal_type value = tu::value(12);
+    node.set_attribute_value("key1", value); 
+    node.set_attribute_value("key2", std::move(value)); 
+    node.set_attribute_value("key3", tu::value(3)); 
+}
+
