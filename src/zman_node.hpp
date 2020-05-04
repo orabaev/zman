@@ -57,7 +57,7 @@ public:
     {
         auto it = attributes_.find(key);
         if (it == attributes_.end()) return std::nullopt;
-        return convert::to_non_temporal_value(timepoint, it->second);
+        return convert::to_non_temporal_type(timepoint, it->second);
     }
 
 private:
