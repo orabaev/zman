@@ -15,9 +15,10 @@ template<
     , class KEY
     , class VALUE
 >
-class node : public entity<NAMESPACE, ID>
+class node : public entity<NAMESPACE, ID, TIMEPOINT>
 {
 public:
+    using base_type                = entity<NAMESPACE, ID, TIMEPOINT>;
     using namespace_type           = NAMESPACE;
     using id_type                  = ID;
     using timepoint_type           = TIMEPOINT; 
@@ -34,7 +35,7 @@ public:
           const namespace_type& namespac
         , const id_type&        id
     )
-    : entity<NAMESPACE, ID>(namespac, id)
+    : entity<NAMESPACE, ID, TIMEPOINT>(namespac, id)
     {
     }
 

@@ -10,21 +10,21 @@ using namespace std;
 
 using namespace_type     = string;
 using id_type            = int;
-using time_point_type    = int;
+using timepoint_type     = int;
 using key_type           = string;
 using value_type         = int;
 
 using node_type = node<
       namespace_type
     , id_type
-    , time_point_type
+    , timepoint_type
     , key_type 
     , value_type
 >;
 
 using attribute_t = typename node_type::attribute;
-using tu          = test_util<time_point_type, key_type, value_type>;
-using convert     = temporal_convert<time_point_type, key_type, value_type>;
+using tu          = test_util<timepoint_type, key_type, value_type>;
+using convert     = temporal_convert<timepoint_type, key_type, value_type>;
 
 TEST_CASE("node.defaults")
 {
