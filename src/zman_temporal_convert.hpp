@@ -7,6 +7,14 @@
 
 namespace zman {
 
+template<typename T> struct is_variant : std::false_type {};
+
+template<typename ...Args>
+struct is_variant<std::variant<Args...>> : std::true_type {};
+
+template<typename T>
+inline constexpr bool is_variant_v=is_variant<T>::value;
+
 template<
       class NAMESPACE
     , class ID
@@ -31,15 +39,6 @@ struct temporal_convert
     using attribute_map_type          = typename attribute_map::type;
     using attribute_map_temporal_type = typename attribute_map::temporal_type;
     using entity_type                 = entity<namespace_type, id_type, timepoint_type>;
-    
-    template<class NON_TEMPORAL_TYPE>
-    static std::optional<NON_TEMPORAL_TYPE> to_non_temporal_type(
-          const timepoint_type&    timepoint
-        , const NON_TEMPORAL_TYPE& value
-    )
-    {
-        return std::optional<NON_TEMPORAL_TYPE>(value);
-    }
 
     static std::optional<typename entity_type::ptr_type> to_non_temporal_type(
           const timepoint_type&                 timepoint
@@ -50,6 +49,25 @@ struct temporal_convert
         auto ptr = entity_ptr->snap(timepoint);
         if (!ptr) return std::nullopt;
         return std::optional<typename entity_type::ptr_type>(ptr);
+    }
+
+    template<class NON_TEMPORAL_TYPE>
+    static std::optional<NON_TEMPORAL_TYPE> to_non_temporal_type(
+          const timepoint_type&    timepoint
+        , const NON_TEMPORAL_TYPE& value
+    )
+    {
+        if constexpr (is_variant_v<NON_TEMPORAL_TYPE>)
+        {
+            std::optional<NON_TEMPORAL_TYPE> ret;
+            std::visit([&timepoint, &ret](auto&& arg){
+                ret = to_non_temporal_type(timepoint, arg);
+            }, value);  
+            return ret;
+        }
+        {
+            return std::optional<NON_TEMPORAL_TYPE>(value);
+        }
     }
 
     static std::optional<value_type> to_non_temporal_type(
