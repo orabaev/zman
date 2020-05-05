@@ -78,7 +78,7 @@ public:
             if (attribute)
             {
                 auto temporal_attribute = convert::to_temporal_type(std::move(*attribute));
-                ptr->attributes_[v.first] = temporal_attribute;
+                ptr->attributes_[v.first] = std::move(temporal_attribute);
             }
         }
         return ptr;

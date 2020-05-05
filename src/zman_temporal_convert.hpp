@@ -131,7 +131,8 @@ struct temporal_convert
         }
         
         return !map.empty() ? std::optional<attribute_map_type>(std::move(map)) : std::nullopt;
-    } 
+    }
+
 }; 
 
 }
