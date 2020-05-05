@@ -43,11 +43,13 @@ struct temporal_convert
 
     static std::optional<typename entity_type::ptr_type> to_non_temporal_type(
           const timepoint_type&                 timepoint
-        , const typename entity_type::ptr_type& ptr
+        , const typename entity_type::ptr_type& entity_ptr
     )
     {
+        if (!entity_ptr) return std::nullopt;
+        auto ptr = entity_ptr->snap(timepoint);
         if (!ptr) return std::nullopt;
-        return std::optional<typename entity_type::ptr_type>(ptr->snap(timepoint));
+        return std::optional<typename entity_type::ptr_type>(ptr);
     }
 
     static std::optional<value_type> to_non_temporal_type(
@@ -105,6 +107,15 @@ struct temporal_convert
         }, temporal_attribute);  
         return ret;
     } 
+
+    static attribute_temporal_type to_temporal_type(attribute_type&& attribute)
+    {
+        attribute_temporal_type ret;
+        std::visit([&ret](auto&& arg){
+            ret = std::move(arg);
+        }, std::move(attribute));  
+        return ret;
+    }
 
     static std::optional<attribute_map_type> to_non_temporal_type(
           const timepoint_type&              timepoint

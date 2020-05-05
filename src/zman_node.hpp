@@ -19,6 +19,7 @@ class node : public entity<NAMESPACE, ID, TIMEPOINT>
 {
 public:
     using base_type                = entity<NAMESPACE, ID, TIMEPOINT>;
+    using ptr_type                 = std::shared_ptr<node>;
     using namespace_type           = NAMESPACE;
     using id_type                  = ID;
     using timepoint_type           = TIMEPOINT; 
@@ -66,6 +67,21 @@ public:
         auto it = attributes_.find(key);
         if (it == attributes_.end()) return std::nullopt;
         return convert::to_non_temporal_type(timepoint, it->second);
+    }
+
+    virtual typename base_type::ptr_type snap(const timepoint_type& timepoint) const override
+    {
+        auto ptr = std::make_shared<node>(base_type::entity_namespace(), base_type::id());        
+        for (const auto& v : attributes_)
+        {
+            auto attribute = convert::to_non_temporal_type(timepoint, v.second);
+            if (attribute)
+            {
+                auto temporal_attribute = convert::to_temporal_type(std::move(*attribute));
+                ptr->attributes_[v.first] = temporal_attribute;
+            }
+        }
+        return ptr;
     }
 
 private:

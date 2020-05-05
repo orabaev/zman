@@ -36,8 +36,7 @@ TEST_CASE("temporal_convert.to_non_temporal_type.entity.ptr")
     auto ptr = make_shared<convert::entity_type>("namespace", 1);
     timepoint_type timepoint = 1;
     auto optional_value = convert::to_non_temporal_type(timepoint, ptr);;
-    ptr = *optional_value;
-    CHECK_FALSE( ptr );
+    CHECK_FALSE( optional_value );
 }
 
 TEST_CASE("temporal_convert.to_non_temporal_type.array")
