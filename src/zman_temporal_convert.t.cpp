@@ -6,12 +6,22 @@
 using namespace zman;
 using namespace std;
 
-using time_point_type = int;
+using namespace_type  = string;
+using id_type         = int;
+using timepoint_type  = int;
 using key_type        = string;
 using value_type      = int;
-using convert         = temporal_convert<time_point_type, key_type, value_type>;
+
+using convert = temporal_convert<
+      namespace_type
+    , id_type
+    , timepoint_type
+    , key_type
+    , value_type
+>;
+
 using attribute_t     = typename convert::attribute; 
-using tu              = test_util<time_point_type, key_type, value_type>;
+using tu              = test_util<timepoint_type, key_type, value_type>;
 
 TEST_CASE("temporal_convert.to_non_temporal_type.value")
 {
@@ -19,6 +29,15 @@ TEST_CASE("temporal_convert.to_non_temporal_type.value")
     auto value = tu::value(12);
     auto optional_value = convert::to_non_temporal_type(timepoint, value);
     CHECK( *optional_value == value );
+}
+
+TEST_CASE("temporal_convert.to_non_temporal_type.entity.ptr")
+{
+    auto ptr = make_shared<convert::entity_type>("namespace", 1);
+    timepoint_type timepoint = 1;
+    auto optional_value = convert::to_non_temporal_type(timepoint, ptr);;
+    ptr = *optional_value;
+    CHECK_FALSE( ptr );
 }
 
 TEST_CASE("temporal_convert.to_non_temporal_type.array")

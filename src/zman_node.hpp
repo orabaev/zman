@@ -29,7 +29,14 @@ public:
     using attribute                = typename attribute_map::attribute;
     using attribute_type           = typename attribute::type;
     using attribute_temporal_type  = typename attribute::temporal_type;
-    using convert                  = temporal_convert<timepoint_type, key_type, value_type>; 
+
+    using convert = temporal_convert<
+          namespace_type
+        , id_type
+        , timepoint_type
+        , key_type
+        , value_type
+    >;
          
     node(
           const namespace_type& namespac

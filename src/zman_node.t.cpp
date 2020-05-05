@@ -24,7 +24,7 @@ using node_type = node<
 
 using attribute_t = typename node_type::attribute;
 using tu          = test_util<timepoint_type, key_type, value_type>;
-using convert     = temporal_convert<timepoint_type, key_type, value_type>;
+using convert     = typename node_type::convert;
 
 TEST_CASE("node.defaults")
 {

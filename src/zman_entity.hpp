@@ -28,7 +28,7 @@ public:
 
     const namespace_type& entity_namespace() const { return namespace_; }
     const id_type& id() const { return id_; }
-    virtual ptr_type snap(const timepoint_type& timepoint) { return nullptr; }
+    virtual ptr_type snap(const timepoint_type& timepoint) const { return nullptr; }
 
 private:
     namespace_type namespace_;

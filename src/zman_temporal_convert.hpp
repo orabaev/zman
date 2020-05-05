@@ -3,12 +3,21 @@
 
 #include "zman_attribute.hpp"
 #include "zman_attribute_map.hpp"
+#include "zman_entity.hpp"
 
 namespace zman {
 
-template<class TIMEPOINT, class KEY, class VALUE>
+template<
+      class NAMESPACE
+    , class ID
+    , class TIMEPOINT
+    , class KEY
+    , class VALUE
+>
 struct temporal_convert
 {
+    using namespace_type              = NAMESPACE;
+    using id_type                     = ID;
     using timepoint_type              = TIMEPOINT; 
     using key_type                    = KEY;
     using value_type                  = VALUE; 
@@ -21,6 +30,7 @@ struct temporal_convert
     using attribute_map               = attribute_map<timepoint_type, key_type, value_type>;
     using attribute_map_type          = typename attribute_map::type;
     using attribute_map_temporal_type = typename attribute_map::temporal_type;
+    using entity_type                 = entity<namespace_type, id_type, timepoint_type>;
     
     template<class NON_TEMPORAL_TYPE>
     static std::optional<NON_TEMPORAL_TYPE> to_non_temporal_type(
@@ -29,6 +39,15 @@ struct temporal_convert
     )
     {
         return std::optional<NON_TEMPORAL_TYPE>(value);
+    }
+
+    static std::optional<typename entity_type::ptr_type> to_non_temporal_type(
+          const timepoint_type&                 timepoint
+        , const typename entity_type::ptr_type& ptr
+    )
+    {
+        if (!ptr) return std::nullopt;
+        return std::optional<typename entity_type::ptr_type>(ptr->snap(timepoint));
     }
 
     static std::optional<value_type> to_non_temporal_type(
