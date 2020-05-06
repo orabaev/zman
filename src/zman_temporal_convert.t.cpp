@@ -31,6 +31,15 @@ TEST_CASE("temporal_convert.to_non_temporal_type.value")
     CHECK( *optional_value == value );
 }
 
+TEST_CASE("temporal_convert.to_non_temporal_type.variant")
+{
+    attribute_t::timepoint_type timepoint = 1;
+    variant<int,string> v1;
+    v1 = "hello";
+    auto v2 = convert::to_non_temporal_type(timepoint, v1);
+    CHECK( v1 == v2 );
+}
+
 TEST_CASE("temporal_convert.to_non_temporal_type.entity.ptr")
 {
     auto ptr = make_shared<convert::entity_type>("namespace", 1);
