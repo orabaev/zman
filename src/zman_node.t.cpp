@@ -90,3 +90,22 @@ TEST_CASE("node.get_attribute_value")
     expected = tu::array({7,8});
     CHECK( expected == *node.get_attribute_value(3, "key4") ); 
 }
+
+TEST_CASE("node.snap")
+{
+    node_type node("namespace.node", 1);
+    node.set_attribute_value("key1", tu::value(12)); 
+    node.set_attribute_value("key2", tu::temporal_value({{1,5},{3,7}}) ); 
+    
+    auto ptr = node.snap(3);
+    CHECK( ptr );
+
+    auto node_ptr = static_cast<node_type*>(ptr.get());
+    attribute_t::type expected = tu::value(12);
+    auto optional_value = node_ptr->get_attribute_value(10, "key1");
+    CHECK( expected == optional_value ); 
+
+    expected = tu::value(7);
+    optional_value = node_ptr->get_attribute_value(10, "key2");
+    CHECK( expected == optional_value );
+} 
