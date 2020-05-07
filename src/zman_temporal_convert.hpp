@@ -76,7 +76,8 @@ struct temporal_convert
     )
     {
         auto ptr = temporal_value.find(timepoint);
-        return ptr ? std::optional<value_type>(*ptr) : std::nullopt;
+        if (!ptr) return std::nullopt;
+        return to_non_temporal_type(timepoint, *ptr);
     }
 
     static std::optional<array_type> to_non_temporal_type(
