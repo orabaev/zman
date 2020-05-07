@@ -135,23 +135,6 @@ struct temporal_convert
         }, std::move(attribute));  
         return ret;
     }
-
-    static std::optional<attribute_map_type> to_non_temporal_type(
-          const timepoint_type&              timepoint
-        , const attribute_map_temporal_type& temporal_map
-    )
-    {
-        attribute_map_type map;
-        
-        for (const auto& value : temporal_map)
-        {
-            auto optional_value = to_non_temporal_type(timepoint, value.second);
-            if (optional_value) map[value.first] = std::move(*optional_value);
-        }
-        
-        return !map.empty() ? std::optional<attribute_map_type>(std::move(map)) : std::nullopt;
-    }
-
 }; 
 
 }
