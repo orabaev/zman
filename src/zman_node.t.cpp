@@ -139,7 +139,7 @@ TEST_CASE("node.complex_value_type")
     ptr2->set_attribute_value("2", ctu::temporal_value({{1,500},{3,700}}) ); 
 
     node.set_attribute_value("key3", ctu::value(ptr1));
-    node.set_attribute_value("key4", ctu::temporal_value({{1,ptr1},{3,ptr2}}) ); 
+    node.set_attribute_value("key4", ctu::temporal_value({{1,ptr1},{2,ptr2}}) ); 
 
     auto entity_snapped_ptr = node.snap(3);
     auto node_snapped_ptr = static_cast<complex_node_type*>(entity_snapped_ptr.get());
